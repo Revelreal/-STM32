@@ -5,7 +5,11 @@
 
   __我们这个文档主要是讲述如何利用蓝桥杯提供的 ` STM32G431RBT6 `  进行我们的基本操作的实现，下面是我们的详细讲述：__  
 >1.	先打开 **CubeMX**  进行型号的选择:
+<<<<<<< HEAD
 		![CubeMX_MCU](Pictures/Cube_MCU.png"CubeMX_MCU")
+=======
+		![CubeMX_MCU](Pictures/Cube_MCU.png "CubeMX_MCU")
+>>>>>>> 815e09f41ebcea37006581cf80b1f8d28d4aa905
 
 >	我们这里选择 `STM32G431RBT6` 版本，这里是我们蓝桥杯的标准MCU
 

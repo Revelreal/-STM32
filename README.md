@@ -6,9 +6,8 @@
   __我们这个文档主要是讲述如何利用蓝桥杯提供的 ` STM32G431RBT6 `  进行我们的基本操作的实现，下面是我们的详细讲述：__  
 >1.	先打开 **CubeMX**  进行型号的选择:
 
-		![CubeMX_MCU](Pictures/Cube_MCU.png"CubeMX_MCU")
-	
-		![CubeMX_MCU](Pictures/Cube_MCU.png "CubeMX_MCU")
+>![CubeMX_MCU](Pictures/Cube_MCU.png "CubeMX_MCU")
+
 
 
 >	我们这里选择 `STM32G431RBT6` 版本，这里是我们蓝桥杯的标准MCU
@@ -28,20 +27,20 @@
 >	接下来设置 Debug 为: `serial wire` 
 
 
->![CubeMX_Debug](Pictures/Debug.png"CubeMX_MCU")
+>![CubeMX_Debug](Pictures/Debug.png "CubeMX_MCU")
 
 >	接下来我们调整时钟设置，调整参数均已经标注好:
 > 
 
->![CubeMX_Debug](Pictures/Clock_Conf.png"CubeMX_MCU")
+>![CubeMX_Debug](Pictures/Clock_Conf.png "CubeMX_MCU")
 >
 >	接下来是工程名称和编译器的设置:
 
->![CubeMX_Debug](Pictures/Project.png"CubeMX_MCU")
+>![CubeMX_Debug](Pictures/Project.png "CubeMX_MCU")
 >
 >	勾选下面的这项：
 
->![CubeMX_Debug](Pictures/generate_h.png"CubeMX_MCU")
+>![CubeMX_Debug](Pictures/generate_h.png "CubeMX_MCU")
 >
 
 ---

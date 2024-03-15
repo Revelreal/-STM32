@@ -106,33 +106,53 @@ int main(void)
 			char text[30];
 			if(key[0].signal_flag == 1)
 			{
-					sprintf(text,"key0downed~");
+					sprintf(text,"key0downed~         ");
 					LCD_DisplayStringLine(Line9, (unsigned char *)text);
 					key[0].signal_flag = 0;
 			}
+			if(key[0].long_flag == 1)
+			{
+					sprintf(text,"key0_long_downed~");
+					LCD_DisplayStringLine(Line9, (unsigned char *)text);
+					key[0].long_flag = 0;
+			}
 			if(key[1].signal_flag == 1)
 			{
-					sprintf(text,"key1downed~");
+					sprintf(text,"key1downed~        ");
 					LCD_DisplayStringLine(Line9, (unsigned char *)text);
 					key[1].signal_flag = 0;
 			}
+			if(key[1].long_flag == 1)
+			{
+					sprintf(text,"key1_long_downed~");
+					LCD_DisplayStringLine(Line9, (unsigned char *)text);
+					key[1].long_flag = 0;
+			}
 			if(key[2].signal_flag == 1)
 			{
-					sprintf(text,"key2downed~");
+					sprintf(text,"key2downed~         ");
 					LCD_DisplayStringLine(Line9, (unsigned char *)text);
 					key[2].signal_flag = 0;
 			}
+			if(key[2].long_flag == 1)
+			{
+					sprintf(text,"key2_long_downed~");
+					LCD_DisplayStringLine(Line9, (unsigned char *)text);
+					key[2].long_flag = 0;
+			}
 			if(key[3].signal_flag == 1)
 			{
-					sprintf(text,"key3downed~");
+					sprintf(text,"key3downed~          ");
 					LCD_DisplayStringLine(Line9, (unsigned char *)text);
 					key[3].signal_flag = 0;
 			}
-			/*else{
-					LCD_DisplayStringLine(Line9, (unsigned char *)"Waiting for orders!");
-					HAL_Delay(1000);
-					LCD_ClearLine(Line9);
-			}*/
+			if(key[3].long_flag == 1)
+			{
+					sprintf(text,"key3_long_downed~");
+					LCD_DisplayStringLine(Line9, (unsigned char *)text);
+					key[3].long_flag = 0;
+			}
+			
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

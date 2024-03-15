@@ -15,18 +15,34 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)					// HAL_TIM_Perio
 					case 0:{
 						if(key[i].key_status == 0)															 // we have four keys to detect
 							key[i].judge_status = 1;															 // if we figure that the key is clicked
+						  key[i].key_time = 0;  																 // clear the recorded time
 					}
 					break;
 					case 1:{
 						if(key[i].key_status == 0)															 // we have four keys to detect
 							key[i].judge_status = 2;															 // if we figure that the key is clicked
-							key[i].signal_flag = 1;
+						  else{
+								key[i].judge_status = 0;														 // rejudge the status
+							}
 					}
 					break;
-					case 2:{
+					case 2:{																									// judge from here
 						if(key[i].key_status == 1)
 						{
 							key[i].judge_status = 0;															 // rejudge the clicked circumstance
+							
+							if(key[i].key_time < 70)
+							{
+								key[i].signal_flag = 1;
+							}
+						}
+						else{
+							key[i].key_time++;
+							
+							if(key[i].key_time > 70)																// figure out whether it's a long touch or not
+							{
+								key[i].long_flag = 1;
+							}
 						}
 				}
 					break;

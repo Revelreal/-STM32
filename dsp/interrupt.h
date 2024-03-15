@@ -7,6 +7,7 @@ struct keys{
 	bool key_status;
 	bool signal_flag;
 	unsigned int key_time;				// To record the pused time
+	bool long_flag;
 };
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
 #endif

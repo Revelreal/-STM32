@@ -269,5 +269,142 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)					// HAL_TIM_Perio
 	至此，我们已经可以实现按键的检测与消抖
 ---
  ## 五、按键的长按检测
- 
 
+> 接下来就是按键的长按检测，我们修改 `interrupt.h` 与 `interrupt.c` 的代码：
+
+```c
+# include "interrupt.h"
+struct keys key[4] = {0, 0, 0};																			// Initialize the struct
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)					// HAL_TIM_PeriodElapsedCallback
+{
+	if(htim->Instance == TIM3){																				// To figure out wheather it's from TIM3
+			key[0].key_status = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_0);			// Read the value of GPIOB_0
+		  key[1].key_status = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_1);	
+	    key[2].key_status = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_2);	
+			key[3].key_status = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0);	
+		
+		  for(int i=0; i < 4; i++)																			// The code here is meant to eliminate the false movement
+		{
+				switch(key[i].judge_status){
+				
+					case 0:{
+						if(key[i].key_status == 0)															 // we have four keys to detect
+							key[i].judge_status = 1;															 // if we figure that the key is clicked
+						  key[i].key_time = 0;  																 // clear the recorded time
+					}
+					break;
+					case 1:{
+						if(key[i].key_status == 0)															 // we have four keys to detect
+							key[i].judge_status = 2;															 // if we figure that the key is clicked
+						  else{
+								key[i].judge_status = 0;														 // rejudge the status
+							}
+					}
+					break;
+					case 2:{																									// judge from here
+						if(key[i].key_status == 1)
+						{
+							key[i].judge_status = 0;															 // rejudge the clicked circumstance
+							
+							if(key[i].key_time < 70)
+							{
+								key[i].signal_flag = 1;
+							}
+						}
+						else{
+							key[i].key_time++;
+							
+							if(key[i].key_time > 70)																// figure out whether it's a long touch or not
+							{
+								key[i].long_flag = 1;
+							}
+						}
+				}
+					break;
+		}
+	}
+}
+	}
+
+```
+
+> 我们修改 `signal_flag` 的信号判断在 **case3** 当中判断，并增加 `key_time` 来判断长按的时间，在 `interrupt.h` 的结构体定义当中加入bool long_flag来判断是否显示长按
+> 
+```c
+# ifndef _INTERRUPT_H_
+# define _INTERRUPT_H_
+# include "main.h"
+# include "stdbool.h"
+struct keys{
+	unsigned judge_status;
+	bool key_status;
+	bool signal_flag;
+	unsigned int key_time;				// To record the pused time
+	bool long_flag;
+};
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
+#endif
+
+```
+
+ **接下来更改main.c当中的代码**
+ 
+ ```c
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
+  while (1)
+  {
+    /* USER CODE END WHILE */
+			char text[30];
+			if(key[0].signal_flag == 1)
+			{
+					sprintf(text,"key0downed~         ");
+					LCD_DisplayStringLine(Line9, (unsigned char *)text);
+					key[0].signal_flag = 0;
+			}
+			if(key[0].long_flag == 1)
+			{
+					sprintf(text,"key0_long_downed~");
+					LCD_DisplayStringLine(Line9, (unsigned char *)text);
+					key[0].long_flag = 0;
+			}
+			if(key[1].signal_flag == 1)
+			{
+					sprintf(text,"key1downed~        ");
+					LCD_DisplayStringLine(Line9, (unsigned char *)text);
+					key[1].signal_flag = 0;
+			}
+			if(key[1].long_flag == 1)
+			{
+					sprintf(text,"key1_long_downed~");
+					LCD_DisplayStringLine(Line9, (unsigned char *)text);
+					key[1].long_flag = 0;
+			}
+			if(key[2].signal_flag == 1)
+			{
+					sprintf(text,"key2downed~         ");
+					LCD_DisplayStringLine(Line9, (unsigned char *)text);
+					key[2].signal_flag = 0;
+			}
+			if(key[2].long_flag == 1)
+			{
+					sprintf(text,"key2_long_downed~");
+					LCD_DisplayStringLine(Line9, (unsigned char *)text);
+					key[2].long_flag = 0;
+			}
+			if(key[3].signal_flag == 1)
+			{
+					sprintf(text,"key3downed~          ");
+					LCD_DisplayStringLine(Line9, (unsigned char *)text);
+					key[3].signal_flag = 0;
+			}
+			if(key[3].long_flag == 1)
+			{
+					sprintf(text,"key3_long_downed~");
+					LCD_DisplayStringLine(Line9, (unsigned char *)text);
+					key[3].long_flag = 0;
+			}
+			
+ ```
+ 
+ > 根据signal_flag与long_flag判断LCD屏幕上的显示字符串

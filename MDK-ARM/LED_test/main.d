@@ -28,5 +28,12 @@ led_test\main.o: ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_flash_ex.h
 led_test\main.o: ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_flash_ramfunc.h
 led_test\main.o: ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_pwr.h
 led_test\main.o: ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_pwr_ex.h
+led_test\main.o: ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_tim.h
+led_test\main.o: ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_tim_ex.h
+led_test\main.o: ../Core/Inc/tim.h
 led_test\main.o: ../Core/Inc/gpio.h
 led_test\main.o: ../Core/Src/led.h
+led_test\main.o: ../dsp/lcd.h
+led_test\main.o: D:\MDK_ARM\ARM\ARM_Compiler_5.06u5\Bin\..\include\stdio.h
+led_test\main.o: ../dsp/interrupt.h
+led_test\main.o: D:\MDK_ARM\ARM\ARM_Compiler_5.06u5\Bin\..\include\stdbool.h

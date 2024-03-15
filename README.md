@@ -45,7 +45,7 @@
 
 ---
 
-## 二、ARM-Keil的代码编写与配置：
+## 二、ARM-Keil的代码编写与配置
 
 >	首先，在工程目录下新建一个dsp文件夹存放我们自己写的代码文件（.h/.c）文件
 >	
@@ -114,3 +114,160 @@
 >```
 >
 ***至此，我们已经可以实现在 `STM32G431RBT6` MCU的跑马灯效果了***
+
+---
+
+## 三、LCD的使用
+
+> 我们在上文中已经实现了跑马灯的效果，现在，我们实现LCD显示的功能
+> 	1. 从官方添加  `lcd.h` 与 `lcd.c` 和 `fonts` 字体文件添加到项目当中
+> 	2. 根据官方提供的原理图设置引脚：
+
+![Image](Pictures/LCD_set.png)
+
+
+> 设置完成之后我们当中 `MX_GPIO_Init` 当中初始化我们的 `LCD` 屏幕
+> ```c
+>/* Initialize all configured peripherals */
+>  MX_GPIO_Init();
+>  /* USER CODE BEGIN 2 */										
+>		LCD_Init();																	// Initialize LCD
+>		LCD_Clear(Black);															// 清屏
+>		LCD_SetBackColor(Black);													// 设置背景色是黑色
+>		LCD_SetTextColor(White);													// 设置文本颜色是白色
+>		 
+> /* USER CODE END 2 */ 
+> ```
+
+>  **注意，在这里的我们需要在头文件引入 `stdio.h`  以便调用 `sprintf` 函数**  
+>
+>  ```c
+>  /* USER CODE BEGIN WHILE */
+>  while (1)
+>  {
+>  /* USER CODE END WHILE */
+>  			char text[30];											// >Define a char martrix
+>  			char data1[30]; 
+>  			unsigned int CNBR = 2; 
+>  			sprintf(text, "--------Data");							// >Print the text into martrix
+>  			sprintf(data1,"--CNBR:%d", CNBR);
+>  			LCD_DisplayStringLine(Line1, (unsigned char *)text);
+>  			LCD_DisplayStringLine(Line3, (unsigned char *)data1);
+>  /* USER CODE BEGIN 3 */
+>  }
+>  ```
+>  
+
+> **调用LCD进行打印需要先定义一个字符数组然后将我们想要打印的字符串传入其中**
+> **随后使用 `LCD_DisplayStringLine(Linen, (unsigned char *)(unsigned char 类型的数据容器))` **
+
+---
+## 四、Key按键的使用（定时器的使用）
+
+
+> ![Image](Pictures/Key.png)
+> 
+
+>		首先，老生常谈，我们根据 `单片机原理图` 进行CubeMX的配置:
+>![Image](Pictures/GPIO_input_Key.png)	
+>
+>		随后，我们选中刚才设置的几个端口并且在CubeMX的设置当中选择上拉，如上图所示：
+
+>![Image](Pictures/Key_Pullup.png)
+>
+
+>	接下来我们要进行时钟信号的配置(任选一个TIM，设置clocksorce为内部Internal Clock)(工作频率设置为1MHZ)，所以PSC = (80/1) - 1,所以我们在这里设置我们的PSC为79，定时频率=外部总线频率/(PSC+1)* counter 
+>	
+>![Image](Pictures/timer_Conf.png)
+>
+
+>	然后我们在NVIC当中设置中断
+>	
+
+>	勾选enabled,然后点击Generate Code 生成代码
+
+
+>	// 在这里我们定义我们的interrupt头文件来使用时钟定时进行端口扫描
+>	# ifndef _INTERRUPT_H_
+>	# define _INTERRUPT_H_
+>	# include "main.h"
+>	# include "stdbool.h"
+>	struct keys{
+>		unsigned judge_status;
+>		bool key_status;
+>		bool signal_flag;
+>	};
+>	void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
+>	#endif
+>
+```c
+// 我们在这里定义我们的interrupt.c文件，主要目的就是判断哪个端口被按下以及消抖，注意这里的函数名称是固定的
+# include "interrupt.h"
+struct keys key[4] = {0, 0, 0};												// Initialize the struct																
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)					// HAL_TIM_PeriodElapsedCallback
+{
+	if(htim->Instance == TIM3){																				// To figure out wheather it's from TIM3
+			key[0].key_status = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_0);			// Read the value of GPIOB_0
+		  key[1].key_status = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_1);	
+	    key[2].key_status = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_2);	
+			key[3].key_status = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0);	
+		
+		  for(int i=0; i < 4; i++)																			// The code here is meant to eliminate the false movement
+		{
+				switch(key[i].judge_status){
+				
+					case 0:{
+						if(key[i].key_status == 0)															 // we have four keys to detect
+							key[i].judge_status = 1;															 // if we figure that the key is clicked
+					}
+					break;
+					case 1:{
+						if(key[i].key_status == 0)															 // we have four keys to detect
+							key[i].judge_status = 2;															 // if we figure that the key is clicked
+							key[i].signal_flag = 1;
+					}
+					break;
+					case 2:{
+						if(key[i].key_status == 1)
+						{
+							key[i].judge_status = 0;															 // rejudge the clicked circumstance
+						}
+				}
+					break;
+		}
+	}
+}
+	}
+```
+
+```c
+ /* USER CODE BEGIN WHILE */
+  while (1)
+  {
+    /* USER CODE END WHILE */
+			char text[30];
+			if(key[0].signal_flag == 1)
+			{
+					sprintf(text,"key0downed~");
+					LCD_DisplayStringLine(Line9, (unsigned char *)text);
+					key[0].signal_flag = 0;
+			}
+			if(key[1].signal_flag == 1)
+			{
+					sprintf(text,"key1downed~");
+					LCD_DisplayStringLine(Line9, (unsigned char *)text);
+					key[1].signal_flag = 0;
+			}
+			/*else{
+					LCD_DisplayStringLine(Line9, (unsigned char *)"Waiting for orders!");
+					HAL_Delay(1000);
+					LCD_ClearLine(Line9);
+			}*/
+    /* USER CODE BEGIN 3 */
+```
+
+	至此，我们已经可以实现按键的检测与消抖
+---
+ ## 五、按键的长按检测
+ 
+

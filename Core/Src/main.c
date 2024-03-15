@@ -18,16 +18,20 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "tim.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "led.h"
+#include "lcd.h"
+#include "stdio.h"
+#include "interrupt.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+extern struct keys key[];								// use typedef from the outer package
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -85,8 +89,13 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
-		showLEDS(0x00);
+		LCD_Init();																	// Initialize LCD
+		LCD_Clear(Black);
+		LCD_SetBackColor(Black);
+		LCD_SetTextColor(White);
+		HAL_TIM_Base_Start_IT(&htim3);							// Initializing the process of the tim3 monitoring
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -94,12 +103,36 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-			showLEDS(0x01);
-			HAL_Delay(500);
-			showLEDS(0x02);
-			HAL_Delay(500);
-			showLEDS(0x04);
-			HAL_Delay(500);
+			char text[30];
+			if(key[0].signal_flag == 1)
+			{
+					sprintf(text,"key0downed~");
+					LCD_DisplayStringLine(Line9, (unsigned char *)text);
+					key[0].signal_flag = 0;
+			}
+			if(key[1].signal_flag == 1)
+			{
+					sprintf(text,"key1downed~");
+					LCD_DisplayStringLine(Line9, (unsigned char *)text);
+					key[1].signal_flag = 0;
+			}
+			if(key[2].signal_flag == 1)
+			{
+					sprintf(text,"key2downed~");
+					LCD_DisplayStringLine(Line9, (unsigned char *)text);
+					key[2].signal_flag = 0;
+			}
+			if(key[3].signal_flag == 1)
+			{
+					sprintf(text,"key3downed~");
+					LCD_DisplayStringLine(Line9, (unsigned char *)text);
+					key[3].signal_flag = 0;
+			}
+			/*else{
+					LCD_DisplayStringLine(Line9, (unsigned char *)"Waiting for orders!");
+					HAL_Delay(1000);
+					LCD_ClearLine(Line9);
+			}*/
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

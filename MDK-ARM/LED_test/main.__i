@@ -1,6 +1,0 @@
---c99 -c --cpu Cortex-M4.fp.sp -D__EVAL -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32G4xx_HAL_Driver/Inc -I ../Drivers/STM32G4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32G4xx/Include -I ../Drivers/CMSIS/Include -I ..\dsp
--I.\RTE\_LED_test
--ID:\MDK_ARM\ARM\CMSIS\5.9.0\CMSIS\Core\Include
--ID:\MDK_ARM\Keil\STM32G4xx_DFP\1.5.0\Drivers\CMSIS\Device\ST\STM32G4xx\Include
--D__UVISION_VERSION="539" -D_RTE_ -DSTM32G431xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32G431xx
--o led_test\main.o --omf_browse led_test\main.crf --depend led_test\main.d "../Core/Src/main.c"

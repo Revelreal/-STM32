@@ -178,7 +178,7 @@
 
 >	接下来我们要进行时钟信号的配置(任选一个TIM，设置clocksorce为内部Internal Clock)(工作频率设置为1MHZ)，所以PSC = (80/1) - 1,所以我们在这里设置我们的PSC为79，定时频率=外部总线频率/(PSC+1)* counter 
 >	
->![Image](Pictures/timer_Conf.png)
+>![Image](Pictures/timer_conf.png)
 >
 
 >	然后我们在NVIC当中设置中断
@@ -186,20 +186,23 @@
 
 >	勾选enabled,然后点击Generate Code 生成代码
 
+```c
+	// 在这里我们定义我们的interrupt头文件来使用时钟定时进行端口扫描
+	# ifndef _INTERRUPT_H_
+	# define _INTERRUPT_H_
+	# include "main.h"
+	# include "stdbool.h"
+	struct keys{
+		unsigned judge_status;
+		bool key_status;
+		bool signal_flag;
+	};
+	void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
+	#endif
 
->	// 在这里我们定义我们的interrupt头文件来使用时钟定时进行端口扫描
->	# ifndef _INTERRUPT_H_
->	# define _INTERRUPT_H_
->	# include "main.h"
->	# include "stdbool.h"
->	struct keys{
->		unsigned judge_status;
->		bool key_status;
->		bool signal_flag;
->	};
->	void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
->	#endif
->
+
+```
+
 ```c
 // 我们在这里定义我们的interrupt.c文件，主要目的就是判断哪个端口被按下以及消抖，注意这里的函数名称是固定的
 # include "interrupt.h"
